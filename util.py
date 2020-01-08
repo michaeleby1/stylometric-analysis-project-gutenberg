@@ -21,13 +21,12 @@ def clean_text(file):
     ## deals with many spaces which will make analysis at the character level easier
     s = re.compile('\s+')
     text = s.sub(' ', text)               
-    return text
+    return text.strip()
 
 path = 'project_gutenberg'
 filelist = sorted(glob.glob(path + "/*.txt"), reverse=True)
 
 def mongo_upload(filelist):
-    
     dict_ = {'file': [], 'author': [], 'title': [], 'text': []}
     
     KeyErrorIndexError_count = 0
