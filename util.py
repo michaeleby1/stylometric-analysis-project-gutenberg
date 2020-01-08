@@ -1,6 +1,7 @@
 import re
 import glob
 import numpy as np
+from gutenberg.cleanup import strip_headers
 
 def author_title(file):
     with open(file, 'r') as f:
