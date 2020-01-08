@@ -6,8 +6,8 @@ from gutenberg.cleanup import strip_headers
 def author_title(file):
     with open(file, 'r') as f:
         text = f.read()
-    author = re.findall(r'(?:Author: )(.*)(?:\n)', text)[0]
-    title = re.findall(r'(?:Title: )(.*)(?:\n)', text)[0]
+    author = re.findall(r'(?:Author: )(.*)(?:\n)', text)[0].strip()
+    title = re.findall(r'(?:Title: )(.*)(?:\n)', text)[0].strip()
     return author, title
 
 def clean_text(file):
