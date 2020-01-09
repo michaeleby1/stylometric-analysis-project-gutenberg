@@ -60,7 +60,7 @@ def clean_text(file):
     return text.strip()
 
 
-def mongo_upload(filelist):  
+def mongo_upload(filelist, collection):  
     ## these errors will correspond to missing metadata; if a file doesn't
     ## have all the metadata I want, it will not load into Mongo
     KeyErrorIndexError_count = 0
