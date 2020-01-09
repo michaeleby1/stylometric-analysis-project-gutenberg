@@ -1,0 +1,6 @@
+project_gutenberg/
+text.ipynb
+mongoDB.ipynb
+*.csv
+__pycache__
+*.pyc
