@@ -1,8 +1,12 @@
 import pymongo
 import numpy as np
-import cmudict
+from nltk.corpus import cmudict
+cmudict = cmudict.dict()
 import spacy
-import en_core_web_md
+import en_core_web_lg
+nlp = en_core_web_lg.load()
+import time
+
 
 client = pymongo.MongoClient('mongodb://localhost/')
 db = client['example_database']
