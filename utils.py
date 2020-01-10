@@ -6,8 +6,13 @@ import wikipedia
 PageError = wikipedia.exceptions.PageError
 DisambiguationError = wikipedia.DisambiguationError
 WikipediaException = wikipedia.exceptions.WikipediaException
-import utils
+import pymongo
 import time
+
+
+client = pymongo.MongoClient('mongodb://localhost/')
+db = client['gutenberg_db']
+collection = db['gutenberg_collection']
 
 
 def author_title_year(file):
@@ -64,10 +69,10 @@ def clean_text(file):
 
 
 ## Process a file and upload to mongo
-def mongo_upload(file, collection):  
+def mongo_upload(file, collection=collection):  
     ## these errors will correspond to missing metadata; if a file doesn't
     ## have all the metadata I want, it will not load into Mongo
-
+    
         
     dict_ = {'file': '', 'author': '', 'title': '', 'year': '', 'text': ''}
 
@@ -81,6 +86,9 @@ def mongo_upload(file, collection):
         dict_['year'] = year
         dict_['text'] = clean_text(file)
         print(f'Took {time.time() - s} to process')
+        
+        collection.insert_one(dict_)
+        
     ## quality filtering; if a text doesn't have both author and title 
     ## python will throw KeyError, IndexError, and the text it will 
     ## not enter the database
@@ -96,5 +104,6 @@ def mongo_upload(file, collection):
     ## or doesn't have a wikipedia page it will not enter the database
     except (AttributeError, PageError, DisambiguationError, WikipediaException) as e3:
         pass
-
-    collection.insert_one(dict_)
+    
+    except error as e4:
+        pass
