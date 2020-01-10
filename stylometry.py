@@ -5,17 +5,16 @@ cmudict = cmudict.dict()
 import spacy
 import en_core_web_lg
 nlp = en_core_web_lg.load()
-import time
 
 
-client = pymongo.MongoClient('mongodb://localhost/')
-db = client['example_database']
-collection = db['example_collection']
+# client = pymongo.MongoClient('mongodb://localhost/')
+# db = client['gutenberg_db']
+# collection = db['gutenberg_collection']
 
-nlp = en_core_web_md.load()
-doc = nlp(text)
-tokens = [token.orth_.lower() for token in doc if not token.is_punct and token if not token.is_stop]
-sentences = [sent.string.strip() for sent in doc.sents]
+
+# doc = nlp(text)
+# tokens = [token.orth_.lower() for token in doc if not token.is_punct and token if not token.is_stop]
+# sentences = [sent.string.strip() for sent in doc.sents]
 
 
 def ttr(tokens):
