@@ -5,6 +5,9 @@ from gutenberg.cleanup import strip_headers
 import wikipedia
 PageError = wikipedia.exceptions.PageError
 DisambiguationError = wikipedia.DisambiguationError
+WikipediaException = wikipedia.exceptions.WikipediaException
+import utils
+import time
 
 
 def author_title_year(file):
@@ -71,13 +74,15 @@ def mongo_upload(filelist, collection):
         dict_ = {'file': '', 'author': '', 'title': '', 'year': '', 'text': ''}
 
         try:
+            s = time.time()
             author, title, year = author_title_year(file)
+            print(title)
             dict_['file'] = file
             dict_['author'] = author
             dict_['title'] = title
             dict_['year'] = year
             dict_['text'] = clean_text(file)
-            
+            print(f'Took {time.time() - s} to process')
         ## quality filtering; if a text doesn't have both author and title 
         ## python will throw KeyError, IndexError, and the text it will 
         ## not enter the database
@@ -93,8 +98,9 @@ def mongo_upload(filelist, collection):
         
         ## more quality filtering; if the book is not first wikipedia search result
         ## or doesn't have a wikipedia page it will not enter the database
-        except (AttributeError, PageError, DisambiguationError) as e3:
+        except (AttributeError, PageError, DisambiguationError, WikipediaException) as e3:
             Disambiguation_count += 1
+            
             continue
 
         collection.insert_one(dict_)
