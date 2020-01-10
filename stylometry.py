@@ -41,6 +41,7 @@ def yules_K(tokens):
     token_freq.update(tokens)
     vi = collections.Counter()
     vi.update(token_freq.values())
+    N = len(tokens)
     M = sum([(value * value) * vi[value] for key, value in token_freq.items()])
     K = 10000 * (M - N) / math.pow(N, 2)
     return K
