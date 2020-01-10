@@ -1,5 +1,6 @@
 import pymongo
 import numpy as np
+from collections import Counter
 from nltk.corpus import cmudict
 cmudict = cmudict.dict()
 import spacy
@@ -16,19 +17,33 @@ nlp = en_core_web_lg.load()
 # tokens = [token.orth_.lower() for token in doc if not token.is_punct and token if not token.is_stop]
 # sentences = [sent.string.strip() for sent in doc.sents]
 
-
+## type-to-token ratio
 def ttr(tokens):
     return len(set(tokens))/len(tokens)
 
 
+## percentage of words only used once
+def hapax_legomenon(tokens):
+    V1 = 0
+    N = len(tokens)
+    token_freq = dict(Counter(tokens))
+    for token in token_freq:
+        if token_freq[token] == 1:
+            V1 += 1
+    return V1 / N   
+
+
+## average length of sentence by word count
 def avg_sentence_length_word(sentences):
     return np.mean([len(sentence.split()) for sentence in sentences])
 
 
+## average length of sentence by character count
 def avg_sentence_length_chars(sentences):
     return np.mean([len(sentence) for sentence in sentences])
 
 
+## number of syllables per word (via CMU Pronouncing Dictionary)
 def n_syllables(token):
     try:
         n = [len(list(y for y in x if y[-1].isdigit())) for x in cmudict[token]][0]
@@ -37,6 +52,7 @@ def n_syllables(token):
     return n
 
 
+## number of syllables per word (via the "written method," vowel counts)
 def n_syllables_except(token):
     vowels = 'aeiouy'
     count = 0
@@ -50,8 +66,9 @@ def n_syllables_except(token):
     if count == 0:
         count += 1
     return count
+    
 
-
+## average number of syllables per word (via previous two functions)
 def avg_syllables_per_word(tokens):
     syllables_list = [n_syllables(token) for token in tokens]
     avg_syllables = sum(syllables_list) / max(1, len(tokens))
