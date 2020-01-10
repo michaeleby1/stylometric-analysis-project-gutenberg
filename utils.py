@@ -62,8 +62,9 @@ def clean_text(file):
     text = re.compile('\s+').sub(' ', text)               
     return text.strip()
 
+
 ## Process a file and upload to mongo
-def mongo_upload(file, collection=collection):  
+def mongo_upload(file, collection):  
     ## these errors will correspond to missing metadata; if a file doesn't
     ## have all the metadata I want, it will not load into Mongo
 
