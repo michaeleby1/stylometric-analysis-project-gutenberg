@@ -62,49 +62,38 @@ def clean_text(file):
     text = re.compile('\s+').sub(' ', text)               
     return text.strip()
 
-
-def mongo_upload(filelist, collection):  
+## Process a file and upload to mongo
+def mongo_upload(file, collection=collection):  
     ## these errors will correspond to missing metadata; if a file doesn't
     ## have all the metadata I want, it will not load into Mongo
-    KeyErrorIndexError_count = 0
-    UnicodeError_count = 0 
-    Disambiguation_count = 0
+
         
-    for file in filelist:
-        dict_ = {'file': '', 'author': '', 'title': '', 'year': '', 'text': ''}
+    dict_ = {'file': '', 'author': '', 'title': '', 'year': '', 'text': ''}
 
-        try:
-            s = time.time()
-            author, title, year = author_title_year(file)
-            print(title)
-            dict_['file'] = file
-            dict_['author'] = author
-            dict_['title'] = title
-            dict_['year'] = year
-            dict_['text'] = clean_text(file)
-            print(f'Took {time.time() - s} to process')
-        ## quality filtering; if a text doesn't have both author and title 
-        ## python will throw KeyError, IndexError, and the text it will 
-        ## not enter the database
-        except (KeyError, IndexError) as e:
-            KeyErrorIndexError_count += 1
-            continue
+    try:
+        s = time.time()
+        author, title, year = author_title_year(file)
+        print(title)
+        dict_['file'] = file
+        dict_['author'] = author
+        dict_['title'] = title
+        dict_['year'] = year
+        dict_['text'] = clean_text(file)
+        print(f'Took {time.time() - s} to process')
+    ## quality filtering; if a text doesn't have both author and title 
+    ## python will throw KeyError, IndexError, and the text it will 
+    ## not enter the database
+    except (KeyError, IndexError) as e:
+        pass
 
-        ## this removes duplicate encodings from the dict; all filenames throwing 
-        ## this error end in "-8" or "-0", and there seems to be ASCII versions of them
-        except UnicodeDecodeError as e2:
-            UnicodeError_count += 1
-            continue
-        
-        ## more quality filtering; if the book is not first wikipedia search result
-        ## or doesn't have a wikipedia page it will not enter the database
-        except (AttributeError, PageError, DisambiguationError, WikipediaException) as e3:
-            Disambiguation_count += 1
-            
-            continue
+    ## this removes duplicate encodings from the dict; all filenames throwing 
+    ## this error end in "-8" or "-0", and there seems to be ASCII versions of them
+    except UnicodeDecodeError as e2:
+        pass
 
-        collection.insert_one(dict_)
+    ## more quality filtering; if the book is not first wikipedia search result
+    ## or doesn't have a wikipedia page it will not enter the database
+    except (AttributeError, PageError, DisambiguationError, WikipediaException) as e3:
+        pass
 
-    print(f'Number of missing authors and/or titles: {KeyErrorIndexError_count}')
-    print(f'Number of duplicate encodings: {UnicodeError_count}')
-    print(f'Number missing from wikipedia: {Disambiguation_count}')
+    collection.insert_one(dict_)
