@@ -1,5 +1,7 @@
 import pymongo
 import numpy as np
+import math
+import collections
 from collections import Counter
 from nltk.corpus import cmudict
 cmudict = cmudict.dict()
@@ -24,13 +26,25 @@ def ttr(tokens):
 
 ## percentage of words only used once
 def hapax_legomenon(tokens):
-    V1 = 0
-    N = len(tokens)
+    t1 = 0
+    n = len(tokens)
     token_freq = dict(Counter(tokens))
     for token in token_freq:
         if token_freq[token] == 1:
-            V1 += 1
-    return V1 / N   
+            t1 += 1
+    return t1 / n        
+
+
+## measures the likelihood that two randomly chosen words will be the same
+def yules_K(tokens):
+    token_freq = collections.Counter()
+    token_freq.update(tokens)
+    vi = collections.Counter()
+    vi.update(token_freq.values())
+    print(token_freq)
+    M = sum([(value * value) * vi[value] for key, value in token_freq.items()])
+    K = 10000 * (M - N) / math.pow(N, 2)
+    return K
 
 
 ## average length of sentence by word count
@@ -66,7 +80,7 @@ def n_syllables_except(token):
     if count == 0:
         count += 1
     return count
-    
+
 
 ## average number of syllables per word (via previous two functions)
 def avg_syllables_per_word(tokens):
