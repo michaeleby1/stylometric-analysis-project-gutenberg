@@ -105,5 +105,5 @@ def mongo_upload(file, collection=collection):
     except (AttributeError, PageError, DisambiguationError, WikipediaException) as e3:
         pass
     
-    except error as e4:
+    except:
         pass
