@@ -1,8 +1,9 @@
-import pymongo
+import string
 import numpy as np
-import math
+import scipy as sc
 import collections
 from collections import Counter
+import pymongo
 from nltk.corpus import cmudict
 cmudict = cmudict.dict()
 import spacy
@@ -19,9 +20,17 @@ nlp = en_core_web_lg.load()
 # tokens = [token.orth_.lower() for token in doc if not token.is_punct and token if not token.is_stop]
 # sentences = [sent.string.strip() for sent in doc.sents]
 
+
 ## type-to-token ratio
 def ttr(tokens):
     return len(set(tokens))/len(tokens)
+
+## standardized type-token ratio (average of ttrs over 1000 word chunks)
+def sttr(tokens, window_size=1000):
+    ttrs = []
+    for i in range(int(len(tokens) / window_size)):  # ignore last partial chunk
+        ttrs.append(ttr(tokens[i * window_size:(i * window_size) + window_size]))
+    return np.mean(ttrs)
 
 
 ## percentage of words only used once
@@ -36,15 +45,50 @@ def hapax_legomenon(tokens):
 
 
 ## measures the likelihood that two randomly chosen words will be the same
-def yules_K(tokens):
+def yules_k(tokens):
     token_freq = collections.Counter()
     token_freq.update(tokens)
     vi = collections.Counter()
     vi.update(token_freq.values())
     N = len(tokens)
     M = sum([(value * value) * vi[value] for key, value in token_freq.items()])
-    K = 10000 * (M - N) / math.pow(N, 2)
+    K = 10000 * (M - N) / np.power(N, 2)
     return K
+
+## percentage of document comprised of function words
+def function_words(doc):
+    function_words = """a between in nor some upon
+    about both including nothing somebody us
+    above but inside of someone used
+    after by into off something via
+    all can is on such we
+    although cos it once than what
+    am do its one that whatever
+    among down latter onto the when
+    an each less opposite their where
+    and either like or them whether
+    another enough little our these which
+    any every lots outside they while
+    anybody everybody many over this who
+    anyone everyone me own those whoever
+    anything everything more past though whom
+    are few most per through whose
+    around following much plenty till will
+    as for must plus to with
+    at from my regarding toward within
+    be have near same towards without
+    because he need several under worth
+    before her neither she unless would
+    behind him no should unlike yes
+    below i nobody since until you
+    beside if none so up your
+    """
+    function_words = function_words.split()
+    count = 0
+    for token in doc:
+        if token.orth_.lower() in function_words:
+            count += 1
+    return count / len(doc)
 
 
 ## average length of sentence by word count
@@ -87,3 +131,33 @@ def avg_syllables_per_word(tokens):
     syllables_list = [n_syllables(token) for token in tokens]
     avg_syllables = sum(syllables_list) / max(1, len(tokens))
     return avg_syllables
+
+
+## average number of punctuation characters per sentence
+def punctuation_sentence(sentences):
+    count = 0
+    for sentence in sentences:
+        for char in sentence:
+            if char in string.punctuation:
+                count += 1
+    return float(count) / float(len(sentences))
+
+
+## Shannon's Entropy for readability score
+def shannon_entropy(tokens):
+    token_freq = collections.Counter()
+    token_freq.update(tokens)
+    arr = np.array(list(token_freq.values()))
+    distribution = 1. * arr
+    distribution /= max(1, len(tokens))
+    H = sc.stats.entropy(distribution, base=2)
+    return H
+
+## Simpson's Diversity Index (Simpson's D)
+def simpsons_d(tokens):
+    token_freq = collections.Counter()
+    token_freq.update(tokens)
+    N = len(tokens)
+    n = sum([1.0 * i * (i - 1) for i in token_freq.values()])
+    D = 1 - (n / (N * (N - 1)))
+    return D
