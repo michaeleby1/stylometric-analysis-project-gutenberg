@@ -209,3 +209,14 @@ def verb_to_adv(doc):
         elif token.pos_ == 'ADV':
             n_advs += 1
     return n_verbs / (n_verbs + n_advs)
+    
+
+## average dependency distance between head and children (connected by a single arc)
+def average_dependency_distance(doc):   
+    dep_distances = []
+    for token in doc:
+        children_distances = []
+        for child in token.children:
+            children_distances.append(abs(child.i - token.i))
+        dep_distances.append(np.mean(children_distances))
+    return np.mean([value for value in dep_distances if ~np.isnan(value)])
