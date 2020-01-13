@@ -161,3 +161,13 @@ def simpsons_d(tokens):
     n = sum([1.0 * i * (i - 1) for i in token_freq.values()])
     D = 1 - (n / (N * (N - 1)))
     return D
+
+## average number of noun phrases per 1000 words
+def average_nps(doc, window_size=1000):    
+    counts = []
+    for i in range(int(len(doc) / window_size)):  # ignore last partial chunk
+        count = 0
+        for chunk in (doc[i * window_size:(i * window_size) + window_size]).noun_chunks:
+            count += 1
+        counts.append(count)
+    return np.mean(counts)
