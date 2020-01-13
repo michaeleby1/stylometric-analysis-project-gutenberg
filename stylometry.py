@@ -153,6 +153,7 @@ def shannon_entropy(tokens):
     H = sc.stats.entropy(distribution, base=2)
     return H
 
+
 ## Simpson's Diversity Index (Simpson's D)
 def simpsons_d(tokens):
     token_freq = collections.Counter()
@@ -161,6 +162,7 @@ def simpsons_d(tokens):
     n = sum([1.0 * i * (i - 1) for i in token_freq.values()])
     D = 1 - (n / (N * (N - 1)))
     return D
+
 
 ## average number of noun phrases per 1000 words
 def average_nps(doc, window_size=1000):    
@@ -171,3 +173,39 @@ def average_nps(doc, window_size=1000):
             count += 1
         counts.append(count)
     return np.mean(counts)
+
+
+## noun-to-verb ratio; over .50 indicates noun bias, under .50 indicates verb bias
+def noun_to_verb(doc):
+    n_nouns = 0
+    n_verbs = 0 
+    for token in doc:
+        if token.pos_ == 'NOUN' or token.pos_ == 'PROPN':
+            n_nouns += 1
+        elif token.pos_ == 'VERB':
+            n_verbs += 1
+    return n_nouns / (n_nouns + n_verbs)
+
+
+## noun-to-adjective ratio; over .50 indicates noun bias, under .50 indicates adjective bias
+def noun_to_adj(doc): 
+    n_nouns = 0
+    n_adjs = 0
+    for token in doc:
+        if token.pos_ == 'NOUN' or token.pos_ == 'PROPN':
+            n_nouns += 1
+        elif token.pos_ == 'ADJ':
+            n_adjs += 1
+    return n_nouns / (n_nouns + n_adjs)
+
+
+## verb to adverb ratio; over .50 indicates verb bias, under .50 indicates adverb bias
+def verb_to_adv(doc): 
+    n_verbs = 0
+    n_advs = 0
+    for token in doc:
+        if token.pos_ == 'VERB':
+            n_verbs += 1
+        elif token.pos_ == 'ADV':
+            n_advs += 1
+    return n_verbs / (n_verbs + n_advs)
