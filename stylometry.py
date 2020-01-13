@@ -11,9 +11,9 @@ import en_core_web_lg
 nlp = en_core_web_lg.load()
 
 
-# client = pymongo.MongoClient('mongodb://localhost/')
-# db = client['gutenberg_db']
-# collection = db['gutenberg_collection']
+client = pymongo.MongoClient('mongodb://localhost/')
+db = client['gutenberg_db']
+collection = db['gutenberg_collection']
 
 
 # doc = nlp(text)
@@ -220,3 +220,41 @@ def avg_dependency_distance(doc):
             children_distances.append(abs(child.i - token.i))
         dep_distances.append(np.mean(children_distances))
     return np.mean([value for value in dep_distances if ~np.isnan(value)])
+
+
+## gets all style metrics and uploads into MongoDB
+def get_style_metrics(file, collection=collection):
+    s = time.time()
+    
+    text = collection.find({'file': file}, {'text': 1})[0]['text']
+    
+    doc = nlp(text)
+    tokens = [token.orth_.lower() for token in doc if not token.is_punct and token if not token.is_stop]
+    sentences = [sent.string.strip() for sent in doc.sents]
+    
+    metrics_dict = {'metrics': {'sttr': 0., 'hapax_legomenon': 0., 'yules_k': 0., 'function_words': 0.,
+                                'avg_sentence_length_word': 0., 'avg_sentence_length_chars': 0.,
+                                'avg_syllables_per_word': 0., 'punctuation_sentence': 0., 
+                                'shannon_entropy': 0., 'simpsons_d': 0., 'average_nps': 0.,
+                                'noun_to_verb': 0., 'noun_to_adj': 0., 'verb_to_adv': 0., 
+                                'avg_dependency_distance': 0.}} 
+    
+    metrics_dict['metrics']['sttr'] = sttr(tokens)
+    metrics_dict['metrics']['hapax_legomenon'] = hapax_legomenon(tokens)
+    metrics_dict['metrics']['yules_k'] = yules_k(tokens)
+    metrics_dict['metrics']['function_words'] = function_words(doc)
+    metrics_dict['metrics']['avg_sentence_length_word'] = avg_sentence_length_word(sentences)
+    metrics_dict['metrics']['avg_sentence_length_chars'] = avg_sentence_length_chars(sentences)
+    metrics_dict['metrics']['avg_syllables_per_word'] = avg_syllables_per_word(tokens)
+    metrics_dict['metrics']['punctuation_sentence'] = punctuation_sentence(sentences)
+    metrics_dict['metrics']['shannon_entropy'] = shannon_entropy(tokens)
+    metrics_dict['metrics']['simpsons_d'] = simpsons_d(tokens)
+    metrics_dict['metrics']['average_nps'] = average_nps(doc)
+    metrics_dict['metrics']['noun_to_verb'] = noun_to_verb(doc)
+    metrics_dict['metrics']['noun_to_adj'] = noun_to_adj(doc)
+    metrics_dict['metrics']['verb_to_adv'] = verb_to_adv(doc)
+    metrics_dict['metrics']['avg_dependency_distance'] = avg_dependency_distance(doc)
+    
+    collection.update_one({'file': file}, {'$set': metrics_dict})
+       
+    print(f'Took {time.time() - s}s to process')
