@@ -8,8 +8,10 @@ import pymongo
 from nltk.corpus import cmudict
 cmudict = cmudict.dict()
 import spacy
-import en_core_web_lg
-nlp = en_core_web_lg.load()
+#import en_core_web_lg
+import en_core_web_md
+nlp = en_core_web_md.load()
+nlp.max_length = 10000000
 
 
 client = pymongo.MongoClient('mongodb://localhost/')
@@ -35,14 +37,17 @@ def sttr(tokens, window_size=1000):
 
 
 ## percentage of words only used once
-def hapax_legomenon(tokens):
-    t1 = 0
-    n = len(tokens)
-    token_freq = dict(Counter(tokens))
-    for token in token_freq:
-        if token_freq[token] == 1:
-            t1 += 1
-    return t1 / n        
+def hapax_legomenon(tokens, window_size=1000):
+    hapax_lego = []
+    for i in range(int(len(tokens) / window_size)):   
+        t1 = 0
+        n = window_size
+        token_freq = dict(Counter(tokens[i * window_size:(i * window_size) + window_size]))
+        for token in token_freq:
+            if token_freq[token] == 1:
+                t1 += 1
+        hapax_lego.append(t1 / n)
+    return np.mean(hapax_lego)         
 
 
 ## measures the likelihood that two randomly chosen words will be the same
@@ -229,17 +234,17 @@ def get_style_metrics(file, collection=collection):
     
     text = collection.find({'file': file}, {'text': 1})[0]['text']
     
-    doc = nlp(text)
+    doc = nlp(text, disable=['ner'])
     tokens = [token.orth_.lower() for token in doc if not token.is_punct and token if not token.is_stop]
     sentences = [sent.string.strip() for sent in doc.sents]
-    
+
     metrics_dict = {'metrics': {'sttr': 0., 'hapax_legomenon': 0., 'yules_k': 0., 'function_words': 0.,
                                 'avg_sentence_length_word': 0., 'avg_sentence_length_chars': 0.,
                                 'avg_syllables_per_word': 0., 'punctuation_sentence': 0., 
                                 'shannon_entropy': 0., 'simpsons_d': 0., 'average_nps': 0.,
                                 'noun_to_verb': 0., 'noun_to_adj': 0., 'verb_to_adv': 0., 
                                 'avg_dependency_distance': 0.}} 
-    
+
     metrics_dict['metrics']['sttr'] = sttr(tokens)
     metrics_dict['metrics']['hapax_legomenon'] = hapax_legomenon(tokens)
     metrics_dict['metrics']['yules_k'] = yules_k(tokens)
@@ -255,7 +260,7 @@ def get_style_metrics(file, collection=collection):
     metrics_dict['metrics']['noun_to_adj'] = noun_to_adj(doc)
     metrics_dict['metrics']['verb_to_adv'] = verb_to_adv(doc)
     metrics_dict['metrics']['avg_dependency_distance'] = avg_dependency_distance(doc)
-    
+
     collection.update_one({'file': file}, {'$set': metrics_dict})
        
-    print(f'Took {time.time() - s}s to process')
+    print(f'Took {time.time() - s}s to process {file}')
