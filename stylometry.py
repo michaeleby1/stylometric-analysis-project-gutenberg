@@ -11,7 +11,7 @@ import spacy
 #import en_core_web_lg
 import en_core_web_md
 nlp = en_core_web_md.load()
-nlp.max_length = 10000000
+nlp.max_length = 100000000
 
 
 client = pymongo.MongoClient('mongodb://localhost/')
