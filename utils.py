@@ -8,7 +8,14 @@ DisambiguationError = wikipedia.DisambiguationError
 WikipediaException = wikipedia.exceptions.WikipediaException
 import pymongo
 import time
+import pandas as pd
+from sklearn import preprocessing, metrics
+from sklearn.metrics.pairwise import cosine_similarity
+from fuzzywuzzy import process
 
+# ----------------------
+# ETL PIPELINE
+# ----------------------
 
 client = pymongo.MongoClient('mongodb://localhost/')
 db = client['gutenberg_db']
@@ -104,6 +111,78 @@ def mongo_upload(file, collection=collection):
     ## or doesn't have a wikipedia page it will not enter the database
     except (AttributeError, PageError, DisambiguationError, WikipediaException) as e3:
         pass
+
+# ----------------------
+#  CLUSTERS
+# ----------------------
+
+def cluster_names(row):
+    if row == 0:
+        return 'High complexity prose'
+    elif row == 1:
+        return 'Moderate complexity prose'
+    elif row == 2:
+        return 'History'
+    elif row == 3:
+        return 'Manuals'
+    elif row == 4:
+        return 'Rhetorical works'
+    elif row == 5:
+        return 'Belles-lettres'
+    elif row == 6:
+        return 'Drama'
+
+# ----------------------
+#  RECOMMENDATION ENGINE
+# ----------------------
+
+df = pd.read_csv('metrics_clusters.csv')
+
+## Standard scaling style metics
+style_metrics = df.iloc[:, 4:-1].values
+scaler = preprocessing.StandardScaler()
+metrics_scaled = scaler.fit_transform(style_metrics)
+df_scaled = pd.DataFrame(metrics_scaled, columns=df.columns[4:-1])
+df_scaled = pd.concat([df.iloc[:,:4], df_scaled], axis=1)
+
+df_scaled_subset = df_scaled[['sttr', 'hapax_legomenon', 'yules_k',
+                              'avg_sentence_length_word', 'avg_sentence_length_chars', 
+                              'avg_syllables_per_word', 'punctuation_sentence', 'shannon_entropy', 
+                              'simpsons_d', 'average_nps', 'noun_to_verb', 'noun_to_adj', 
+                              'verb_to_adv','avg_dependency_distance']]
+
+## gets cosine similarity between titles
+cosine_sim = cosine_similarity(df_scaled_subset)
+## reerse mapping titles to indices
+indices = pd.Series(df.index, index=df['title'])
+
+def book_lookup(input_title, cosine_sim=cosine_sim):
+    ## fuzzy matching title
+    title = process.extractOne(input_title, list(df['title']))
+
+    if title[1] >= 85:
+
+        # gets index that matches title
+        idx = indices[title[0]]
+
+        # gets pairwise similarity scores of all titles with that title
+        sim_scores = list(enumerate(cosine_sim[idx]))
+
+        # sorts titles based on the similarity scores
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+
+        # gets scores of the 10 most similar titles
+        sim_scores = sim_scores[1:11]
+
+        # gets title indices
+        book_indices = [i[0] for i in sim_scores]
+
+        # returns book bibliographic info (w/ cluster), style metrics, and top 10 most similar titles
+        input_title = df[df['title'] == title[0]][['author', 'title', 'year', 'cluster']]
+        input_metrics = df[df['title'] == title[0]].iloc[:,4:-1]
+        closest = df[['author', 'title']].iloc[book_indices]
+        
+        return input_title, input_metrics, closest
     
-    except:
-        pass
+    else:
+        print(f'{input_title} not found.')
