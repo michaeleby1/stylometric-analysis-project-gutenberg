@@ -17,7 +17,21 @@ For more information on Project Gutenberg, see [gutenberg.org/](https://www.gute
 
 ## ETL Pipeline
 
-I obtained the data by web-scraping a mirror of Project Gutenberg. I encountered several issues throughout this process. The first was that many of the files were duplicates. 
+In order to obtain the raw text of all books available on Project Gutenberg, I used [wget](https://www.gnu.org/software/wget/) to scrape a [Project Gutenberg mirror](http://www.gutenberg.org/robot/harvest?filetypes[]=txt&langs[]=en) for all English language .txt files in the archive. 
+
+Once obtaining and unzipping the files, there were about 80,000 files, many of which were duplicates. I also needed to extract the bibliographic metadata such as author, title, and year from each file. 
+
+I wrote a parsing function that dealt with both of these problems simultaneously, and used error handling to quality-filter the files, as many of the files contained errors and were simply not of use for the project. My function performed regular expression searches across the texts to capture title and author name; if no title or author was found listed in the file, the function would throw a `KeyError` or `IndexError` and the loop would continue to the next .txt in the directory.
+
+Additionally, many of the texts were duplicate encodings, and would through a `UnicodeDecodeError`. All filenames throwing this error ended in "-8" or "-0", and there seemed to be ASCII versions of all of them.
+
+Next, I wanted to add each text's original publication year to its bibligraphic medadata. Because many publication dates listed inside the .txt files either didn't correspond to that book's _original_ publication date, I used the `.summary` method from the [wikipedia package](https://pypi.org/project/wikipedia/)
+
+If author, title, and year were each found, the loop would define a dictionary equal to these values and insert into a MongoDB collection. .txt files that lacked either author, title, or year were not added to the collection. The full text of the book was run through a function I defined called `clean_text()`, 
+
+The next task was to remove front matter from each of the texts
+
+I found a helpful gutenberg package online 
 
 ## Style Metrics
 
@@ -97,7 +111,7 @@ Using the silhouette method with k-means clustering, I identified 7 stylistic ty
 
     • High vocabulary richness, long and complex sentences, high syllable words, heavy punctuation usage, large dependency distances, many function words
 
-6. Verse and Satire (including poetry)
+6. Belles-lettres (including poetry, verse, and satire)
 
     • High vocabulary richness, long sentences, high syllable words, few function works
 
@@ -105,14 +119,29 @@ Using the silhouette method with k-means clustering, I identified 7 stylistic ty
 
     • Low vocabulary richness, high noun biases, short dependency distances, short sentences, light punctuation usage
 
+Belles-lettres has the highest STTR score, followed by rhetorical works and history. Prose was right in the middle.
+
+![STTR by Cluster](plots/cluster_sttr_violin.png)
+
+Surprisingly, rhetorical works use more adjectives relative to nouns than prose, and drama uses the most nouns relative to adjectives.
+
+![Noun-to-Adj Ratio by Cluster](plots/cluster_pos_violin.png)
+
+Rhethorical works have the largest average number of syllables per word, followed closely by history. 
+
+![Avg Syllable by Cluster](plots/cluster_syllable_violin.png)
+
 ## Metric Space
 
-I performed dimensionality reduction with t-SNE in order to visualize the stylistic similarity between books in lower dimensional space. 
+I performed dimensionality reduction with t-SNE in order to visualize the stylistic similarity between books in 3-dimensional space. 
 
 ![Metric Space](plots/metric_space.png)
 
-Each marker on the plot represents one book in Project Gutenberg. If you open this as an HTML file, as you hover your cursor over a marker, it displays that book's author, title, and publication year. The closest markers to that book represent the most stylistically similar books. The 7 different colors represent the 7 different clusters. 
+Each marker on the above metric space represents one book in Project Gutenberg. If you open it as an HTML file, as you hover your cursor over a marker, it displays that book's author, title, and publication year. The closest markers to that book represent the most stylistically similar books. The 7 different colors represent the 7 different clusters. 
 
 ## Recommendation Engine
 
 For the recommendation engine, I used scikit-learn's StandardScaler to standardize all 16 features. I then used cosine similarity as my distance metric, and built the front-end in Streamlit. After entering a title, the left sidepanel displays that book's title, author, year, and cluster. Below, it displays that title's 16 style metrics and the 10 most stylistically similar titles.
+
+Fuzzy matching
+Put images
