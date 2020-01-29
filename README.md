@@ -17,6 +17,8 @@ For more information on Project Gutenberg, see [gutenberg.org/](https://www.gute
 
 ## ETL Pipeline
 
+I obtained the data by web-scraping a mirror of Project Gutenberg. I encountered several issues throughout this process. The first was that many of the files were duplicates. 
+
 ## Style Metrics
 
 I engineered 16 style metrics indicative of vocabulary richness, lexical complexity, sentence and word length, part-of-speech ratios, and readibility scores:
@@ -57,10 +59,60 @@ Several of the style metrics showed wide variations throughout the timespan in w
 
 ![Style over Time](plots/style_time_1.png)
 
+By contrast, part-of-speech ratios largely remained stagnant over this timeframe, with the exception of verb-to-adverb ratio, which started a decline at the beginning of the 19th century. 
+
+![Part-of-Speech Ratios](plots/pos_time.png)
+
+These style metrics were also useful for visualizing the differences between individual author styles. Below, we have two authors: Charles Dickens and Gertrude Stein. Dickens was known for his very rich vocabulary, Stein for her versatility with few words. We can see that Dickens scores much higher than Stein in both STTR, hapax legomenon, and average dependency distance, however their respectives average number of syllables per word is roughly equal.
+
+![Dickens and Stein 1](plots/dickens_stein_1.png)
+![Dickens and Stein 2](plots/dickens_stein_2.png)
+
+Two additional authors, Karl Marx and William Shakespeare, who intuitively come from very different stylistic types, can also be quantitatively shown to be stylistically different. Below, we can see that Shakespeare, perhaps surprisingly (being a highly descriptive writer), uses more nouns relative to adjectives than Marx, however Marx's sentences are much, much longer than Shakespeare's.
+
+![Marx and Shakespeare 1](plots/marx_shakespeare_1.png)
+![Marx and Shakespeare 2](plots/marx_shakespeare_2.png)
+
 ## Clusters
+
+Using the silhouette method with k-means clustering, I identified 7 stylistic types in Project Gutenberg:
+
+1. High complexity prose
+ 
+    • High vocabulary richness, long sentences, many noun phrases, large dependency distances
+
+2. Moderate complexity prose
+
+    • Medium vocabulary richness, shorter sentences, fewer noun phrases
+
+3. History
+
+    • Medium vocabulary richness, long sentences, high noun-to-verb and noun-to-adjective biases
+
+4. Manuals (including dictionaries, reference, technical books, etc.)
+
+    • Low vocabulary richness, short sentences, heavy punctuation usage, high noun-to-verb and noun-to-adjective biases
+
+5. Rhetorical works (including philosophy and political writing)
+
+    • High vocabulary richness, long and complex sentences, high syllable words, heavy punctuation usage, large dependency distances, many function words
+
+6. Verse and Satire (including poetry)
+
+    • High vocabulary richness, long sentences, high syllable words, few function works
+
+7. Drama (including plays)
+
+    • Low vocabulary richness, high noun biases, short dependency distances, short sentences, light punctuation usage
 
 ## Metric Space
 
-t-SNE
+I performed dimensionality reduction with t-SNE in order to visualize the stylistic similarity between books in lower dimensional space. 
+
+![Metric Space](plots/metric_space.png)
+
+Each marker on the plot represents one book in Project Gutenberg. If you open this as an HTML file, as you hover your cursor over a marker, it displays that book's author, title, and publication year. The closest markers to that book represent the most stylistically similar books. The 7 different colors represent the 7 different clusters. 
 
 ## Recommendation Engine
+
+For the recommendation engine, I used scikit-learn's StandardScaler to standardize all 16 features. I then used cosine similarity as my distance metric, and built the front-end in Streamlit. After entering a title, the left sidepanel displays that book's title, author, year, and cluster. Below, it displays that title's 16 style metrics and the 10 most stylistically similar titles.
