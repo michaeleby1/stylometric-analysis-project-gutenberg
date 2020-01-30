@@ -159,4 +159,4 @@ One approach might be to apply this method to new titles and using it to forecas
 
 Another approach could be to use style metrics for authorship attribution and/or plagiarism detection. 
 
-Moreover, there are numerous additional style metrics that could have been engineered for this project; the only limitation to doing so is time. More granular stylometric analyses could also be performed through in the future. 
+Moreover, there are numerous additional style metrics that could have been engineered for this project; the only limitation to doing so is time. More granular stylometric analyses could be performed in the future. 
