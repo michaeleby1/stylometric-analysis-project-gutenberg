@@ -79,13 +79,13 @@ By contrast, part-of-speech ratios largely remained stagnant over this timeframe
 
 These style metrics were also useful for visualizing the differences between individual author styles. Below, we have two authors: Charles Dickens and Gertrude Stein. Dickens was known for his very rich vocabulary, Stein for her versatility with few words. We can see that Dickens scores much higher than Stein in both STTR, hapax legomenon, and average dependency distance, however their average number of syllables per word is roughly equal.
 
-![Dickens and Stein 1](plots/dickens_stein_1.png)
-![Dickens and Stein 2](plots/dickens_stein_2.png)
+<img src="plots/dickens_stein_1.png" width="700">
+<img src="plots/dickens_stein_2.png" width="700">
 
 Two additional authors, Karl Marx and William Shakespeare, who intuitively come from two very different stylistic types, can be quantitatively shown to be stylistically different. Below, we can see that Shakespeare, perhaps surprisingly (being a highly descriptive writer), uses more nouns relative to adjectives than Marx, however Marx's sentences are much, much longer than Shakespeare's.
 
-<img src="plots/marx_shakespeare_1.png" width="792">
-<img src="plots/marx_shakespeare_2.png" width="792">
+<img src="plots/marx_shakespeare_1.png" width="700">
+<img src="plots/marx_shakespeare_2.png" width="700">
 
 ## Clusters
 
