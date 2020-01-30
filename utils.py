@@ -14,7 +14,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from fuzzywuzzy import process
 
 # ----------------------
-# ETL PIPELINE
+#  ETL PIPELINE
 # ----------------------
 
 client = pymongo.MongoClient('mongodb://localhost/')
