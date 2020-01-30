@@ -75,7 +75,7 @@ Several of the style metrics showed wide variations throughout the timespan in w
 
 By contrast, part-of-speech ratios largely remained stagnant over this timeframe, with the exception of verb-to-adverb ratio, which started to decline near the beginning of the 19th century. 
 
-![Part-of-Speech Ratios](plots/pos_time.png)
+<img src="plots/pos_time.png" width="600"> 
 
 These style metrics were also useful for visualizing the differences between individual author styles. Below, we have two authors: Charles Dickens and Gertrude Stein. Dickens was known for his very rich vocabulary, Stein for her versatility with few words. We can see that Dickens scores much higher than Stein in both STTR, hapax legomenon, and average dependency distance, however their average number of syllables per word is roughly equal.
 
