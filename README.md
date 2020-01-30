@@ -2,7 +2,9 @@
 
 ## Summary
 
-My goal for this project was to build a recommendation engine for books based on author style as opposed to bibliographic metadata or reader reviews, as is the case with many other book recommenders. I also sought to cluster all English books in Project Gutenberg into stylistic types. I did this by engineering numerical style metrics for the full text of every English book in Project Gutenberg, approximately 30,000 titles. 
+My goal for this project was to build a recommendation engine for books based on literary style. This is an alternative to  other book recommenders that are based on bibliographic metadata or reader reviews. I also sought to cluster all English books in Project Gutenberg into stylistic types. 
+
+I accomplished both these tasks by engineering numerical style metrics for the full text of every English book in Project Gutenberg, approximately 30,000 titles. 
 
 Based on the style metrics, I produced two things:
 
