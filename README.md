@@ -27,7 +27,7 @@ Additionally, many of the texts were duplicate encodings, and would through a `U
 
 Next, I wanted to add each text's original publication year to its bibligraphic medadata. Because many publication dates listed inside the .txt files either didn't correspond to that book's _original_ publication date, I used the `.summary` method from the [wikipedia package](https://pypi.org/project/wikipedia/), which wraps the MediaWiki API in get the Wikipedia summary for each title, and performed regex searches on each summary to pull each book's original publication year. 
 
-I ran the full text of each book was run through a function I defined called `clean_text()`. This purpose of this function was to remove much of the front matter from the books, such as garbage characters, chapter titles, footnotes, linebreaks, information about Project Gutenberg, copyright, etc. I found a helpful [gutenberg package](https://github.com/c-w/gutenberg) online to help with this process, however inevitably there was some front matter in some texts to due the lack of standardized formatting; statistically, this front matter should have little impact on the style metrics, as titles, headings, etc. typically total encompass about twenty to thirty words of a text.
+I ran the full text of each book was run through a function I defined called `clean_text()`. This purpose of this function was to remove much of the front matter from the books, such as garbage characters, chapter titles, footnotes, linebreaks, information about Project Gutenberg, copyright, etc. I found a helpful [gutenberg package](https://github.com/c-w/gutenberg) online to help with this process. Although I did my best to remove front matter, due the lack of standardized formatting I was inevitably unable to remove _all_ of it; statistically, though, this should have little impact on the style metrics, as titles, headings, etc. typically only encompass about twenty to thirty words of a text.
 
 I inserted each text's author, title, year, filename, and the full, cleaned text in a MongoDB database stored locally on a virtual machine accessed via Google Cloud Platform. Files that lacked either author, title, or year were not added to the collection.
 
@@ -139,7 +139,20 @@ Each marker on the above metric space represents one book in Project Gutenberg. 
 
 ## Recommendation Engine
 
-For the recommendation engine, I used scikit-learn's StandardScaler to standardize all 16 features. I then used cosine similarity as my distance metric, and built the front-end in Streamlit. After entering a title, the left sidepanel displays that book's title, author, year, and cluster. Below, it displays that title's 16 style metrics and the 10 most stylistically similar titles.
+Because the scale of each of the style metrics sometimes varied widely, I used two scikit-learn methods for scaling the data. The first was `MinMaxScaler()`, however because this is non-distorting for standard deviation, I used the `StandardScaler()` so that the distribution of each metric was a standard normal distribution, with a mean of 0 and a standard deviation of 1. Because I wanted to use cosine similarity as my distance measure, treating the metrics' standard deviations in this way ensures that no one metric is emphasized over the others. 
 
-Fuzzy matching
-Put images
+![Recommender Engine](plots/rec.png)
+
+I built the front-end in Streamlit. The text input object prompts the user to enter a book title. I used the [fuzzywuzzy package](https://github.com/seatgeek/fuzzywuzzy) in order to fuzzy match the inserted title. Fuzzywuzzy uses Levenschtein distance to find the closest match to the input search. 
+
+After entering a search, the left sidepanel displays the closest match's title, author, year, and cluster. Below is that title's 16 style metrics and the 10 most stylistically similar titles.
+
+## Further Research
+
+I see many potential future applications for this kind of stylometric analysis.
+
+One approach might be to apply this method to new titles and using it to forecast sales. This pipeline could just as easily be applied to new titles had those texts been readily accessible in large numbers. 
+
+Another approach could be to use style metrics for authorship attribution and/or plagiarism detection. 
+
+Moreover, there are numerous additional style metrics that could have been engineered for this project; the only limitation to doing so is time. More granular stylometric analyses could also be performed through in the future. 

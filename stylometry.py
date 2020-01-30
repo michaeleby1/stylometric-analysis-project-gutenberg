@@ -19,11 +19,6 @@ db = client['gutenberg_db']
 collection = db['gutenberg_collection']
 
 
-# doc = nlp(text)
-# tokens = [token.orth_.lower() for token in doc if not token.is_punct and token if not token.is_stop]
-# sentences = [sent.string.strip() for sent in doc.sents]
-
-
 ## type-to-token ratio
 def ttr(tokens):
     return len(set(tokens))/len(tokens)
@@ -228,7 +223,7 @@ def avg_dependency_distance(doc):
     return np.mean([value for value in dep_distances if ~np.isnan(value)])
 
 
-## gets all style metrics and uploads into MongoDB
+## gets all style metrics and inserts into MongoDB
 def get_style_metrics(file, collection=collection):
     s = time.time()
     

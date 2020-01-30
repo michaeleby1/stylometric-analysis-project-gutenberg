@@ -5,7 +5,7 @@ import utils
 st.header('Book Search')
 # st.subheader('Enter a book title to see its style metrics')
 
-df = pd.read_csv('metrics_clusters.csv')
+df = pd.read_csv('metrics/metrics_clusters.csv')
 # st.dataframe(df[['title', 'author', 'year']].style.hide_index())
 
 path = st.text_input('Enter title:', '')

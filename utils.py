@@ -136,7 +136,7 @@ def cluster_names(row):
 #  RECOMMENDATION ENGINE
 # ----------------------
 
-df = pd.read_csv('metrics_clusters.csv')
+df = pd.read_csv('metrics/metrics_clusters.csv')
 
 ## Standard scaling style metics
 style_metrics = df.iloc[:, 4:-1].values
