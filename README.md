@@ -25,13 +25,11 @@ I wrote a parsing function that dealt with both of these problems simultaneously
 
 Additionally, many of the texts were duplicate encodings, and would through a `UnicodeDecodeError`. All filenames throwing this error ended in "-8" or "-0", and there seemed to be ASCII versions of all of them.
 
-Next, I wanted to add each text's original publication year to its bibligraphic medadata. Because many publication dates listed inside the .txt files either didn't correspond to that book's _original_ publication date, I used the `.summary` method from the [wikipedia package](https://pypi.org/project/wikipedia/)
+Next, I wanted to add each text's original publication year to its bibligraphic medadata. Because many publication dates listed inside the .txt files either didn't correspond to that book's _original_ publication date, I used the `.summary` method from the [wikipedia package](https://pypi.org/project/wikipedia/), which wraps the MediaWiki API in get the Wikipedia summary for each title, and performed regex searches on each summary to pull each book's original publication year. 
 
-If author, title, and year were each found, the loop would define a dictionary equal to these values and insert into a MongoDB collection. .txt files that lacked either author, title, or year were not added to the collection. The full text of the book was run through a function I defined called `clean_text()`, 
+I ran the full text of each book was run through a function I defined called `clean_text()`. This purpose of this function was to remove much of the front matter from the books, such as garbage characters, chapter titles, footnotes, linebreaks, information about Project Gutenberg, copyright, etc. I found a helpful [gutenberg package](https://github.com/c-w/gutenberg) online to help with this process, however inevitably there was some front matter in some texts to due the lack of standardized formatting; statistically, this front matter should have little impact on the style metrics, as titles, headings, etc. typically total encompass about twenty to thirty words of a text.
 
-The next task was to remove front matter from each of the texts
-
-I found a helpful gutenberg package online 
+I inserted each text's author, title, year, filename, and the full, cleaned text in a MongoDB database stored locally on a virtual machine accessed via Google Cloud Platform. Files that lacked either author, title, or year were not added to the collection.
 
 ## Style Metrics
 
