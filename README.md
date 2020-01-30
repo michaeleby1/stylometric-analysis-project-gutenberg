@@ -84,12 +84,12 @@ These style metrics were also useful for visualizing the differences between ind
 
 Two additional authors, Karl Marx and William Shakespeare, who intuitively come from two very different stylistic types, can be quantitatively shown to be stylistically different. Below, we can see that Shakespeare, perhaps surprisingly (being a highly descriptive writer), uses more nouns relative to adjectives than Marx, however Marx's sentences are much, much longer than Shakespeare's.
 
-![Marx and Shakespeare 1](plots/marx_shakespeare_1.png)
-![Marx and Shakespeare 2](plots/marx_shakespeare_2.png)
+<img src="plots/marx_shakespeare_1.png" width="360">
+<img src="plots/marx_shakespeare_2.png" width="360">
 
 ## Clusters
 
-<img src="plots/silhouette.png" width="300">
+<img src="plots/silhouette.png" width="360">
 
 After using the silhouette method to locate the optimal value for k-means clustering, I identified 7 stylistic types in Project Gutenberg:
 
