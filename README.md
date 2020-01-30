@@ -84,8 +84,8 @@ These style metrics were also useful for visualizing the differences between ind
 
 Two additional authors, Karl Marx and William Shakespeare, who intuitively come from two very different stylistic types, can be quantitatively shown to be stylistically different. Below, we can see that Shakespeare, perhaps surprisingly (being a highly descriptive writer), uses more nouns relative to adjectives than Marx, however Marx's sentences are much, much longer than Shakespeare's.
 
-<img src="plots/marx_shakespeare_1.png" width="360">
-<img src="plots/marx_shakespeare_2.png" width="360">
+<img src="plots/marx_shakespeare_1.png" width="792">
+<img src="plots/marx_shakespeare_2.png" width="792">
 
 ## Clusters
 
