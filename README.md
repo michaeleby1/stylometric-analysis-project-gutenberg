@@ -123,15 +123,15 @@ After using the silhouette method to locate the optimal value for k-means cluste
 
 Belles-lettres has the highest STTR score, followed by rhetorical works and history. Prose is right in the middle.
 
-![STTR by Cluster](plots/cluster_sttr_violin.png)
+<img src="plots/cluster_sttr_violin.png" width="600">
 
 Surprisingly, rhetorical works uses more adjectives relative to nouns than prose, and drama uses the most nouns relative to adjectives.
 
-![Noun-to-Adj Ratio by Cluster](plots/cluster_pos_violin.png)
+<img src="plots/cluster_pos_violin.png" width="600">
 
 Rhethorical works has the largest average number of syllables per word, followed closely by history. 
 
-![Avg Syllable by Cluster](plots/cluster_syllable_violin.png)
+<img src="plots/cluster_syllable_violin.png" width="600">
 
 ## Metric Space
 
