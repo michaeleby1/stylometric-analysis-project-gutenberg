@@ -133,7 +133,7 @@ Rhethorical works have the largest average number of syllables per word, followe
 
 ## Metric Space
 
-I performed dimensionality reduction with t-SNE in order to visualize the stylistic similarity between books in 3-dimensional space. 
+I performed dimensionality reduction with t-distributed Stochastic Neighbor Embedding (t-SNE) in order to visualize the stylistic similarity between books in 3-dimensional space. Simply put, t-SNE defines a probability distribution that summarizes the relationships between data-points in high-dimensional space. 
 
 ![Metric Space](plots/metric_space.png)
 
