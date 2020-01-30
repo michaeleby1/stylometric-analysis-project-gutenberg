@@ -87,7 +87,9 @@ Two additional authors, Karl Marx and William Shakespeare, who intuitively come 
 
 ## Clusters
 
-Using the silhouette method with k-means clustering, I identified 7 stylistic types in Project Gutenberg:
+![silhouette](plots/silhouette.png)
+
+After using the silhouette method to locate the optimal value for k-means clustering, I identified 7 stylistic types in Project Gutenberg:
 
 1. High complexity prose
  
