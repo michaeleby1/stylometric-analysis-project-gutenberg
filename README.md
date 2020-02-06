@@ -13,6 +13,8 @@ Based on the style metrics, I produced two things:
 
 ## Project Gutenberg
 
+<img src='plots/projectgutenberg.png' width=120 align='right'>
+
 Project Gutenberg is a volunteer effort to digitize and archive cultural works, to "encourage the creation and distribution of eBooks.” It was founded in 1971 by American writer Michael S. Hart and is the oldest digital library. Most of the items in its collection are the full texts of public domain books. A majority of the titles were originally published before 1950, as these titles do not fall under copyright protections.
 
 For more information on Project Gutenberg, see [gutenberg.org/](https://www.gutenberg.org/).
