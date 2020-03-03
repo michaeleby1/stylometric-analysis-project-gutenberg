@@ -21,13 +21,13 @@ For more information on Project Gutenberg, see [gutenberg.org/](https://www.gute
 
 ## ETL Pipeline
 
-In order to obtain the raw text of all books available on Project Gutenberg, I used [wget](https://www.gnu.org/software/wget/) to scrape a [Project Gutenberg mirror](http://www.gutenberg.org/robot/harvest?filetypes[]=txt&langs[]=en) for all English language .txt files. 
+In order to obtain the raw text of all books available on Project Gutenberg, I used [wget](https://www.gnu.org/software/wget/) to scrape a [Project Gutenberg mirror](http://www.gutenberg.org/robot/harvest?filetypes[]=txt&langs[]=en) for all English-language .txt files. 
 
 I obtained about 80,000 files from the mirror. I next needed to do two things. First, I needed to extract the bibliographic metadata such as author, title, and year from each of them. Second, I needed to remove duplicates, keeping the highest quality file.
 
-I wrote a parsing function that dealt with both of these problems simultaneously. I used error handling to quality-filter the files, as many of the files were simply of too poor quality to be of use for this project. My function performed regular expression searches across the texts to capture title and author name; if no title or author was found in the file, the function would throw a `KeyError` or `IndexError`, and the loop would continue to the next .txt in the directory.
+I wrote a parsing function that dealt with both of these problems simultaneously. I used error handling to quality-filter the files, as many of them were simply of too poor quality to be of use for this project. My parsing function performed regular expression searches across the texts to capture title and author name; if no title or author was found in the file, the function would throw a `KeyError` or `IndexError`, and the loop would continue to the next .txt in the directory.
 
-Additionally, many of the texts were duplicate encodings, and would through a `UnicodeDecodeError` when I tried to read them in. All filenames throwing this error ended in "-8" or "-0", and there seemed to be ASCII versions of all of them. So they were skipped.
+Additionally, many of the texts were duplicate encodings, and would throw a `UnicodeDecodeError` when I tried to read them in. All filenames throwing this error ended in "-8" or "-0", and there seemed to be ASCII versions of all of them. So they were skipped.
 
 Next, I wanted to add each text's original publication year to its bibligraphic metadata. Because many of the publication dates listed in the files either were missing or did not correspond to that book's _original_ publication date, I used the [wikipedia package](https://pypi.org/project/wikipedia/) to pull each book's original publication year. Through the package's `.summary` method, which wraps the MediaWiki API, I queried each title and performed regex searches on their summaries in order to obtain the year.
 
